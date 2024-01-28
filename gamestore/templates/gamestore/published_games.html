@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load filter %}
+
+{% block title %}Gamestore - My Games{% endblock %}
+
+{% block head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+          integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+{% endblock %}
+
+{% block content %}
+    <h1>My Games</h1>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Category</th>
+            <th scope="col">Price</th>
+            <th scope="col">Sales</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for game in published_games %}
+            <tr>
+                <td>{{ game.name }}</td>
+                <td>{{ game.category.name }}</td>
+                <td>{{ game.price|currency }}</td>
+                <td>{{ game.sales.all|length }}</td>
+                <td class="text-right">
+                    <a href="/game/{{ game.id }}/edit/" class="btn btn-primary btn-sm">
+                        <i class="far fa-edit"></i> Edit
+                    </a>
+                    <a href="/game/{{ game.id }}/transactions/" class="btn btn-primary btn-sm">
+                        <i class="fas fa-money-check-alt"></i> Transactions
+                    </a>
+                    <a href="/game/{{ game.id }}/delete/" class="btn btn-primary btn-sm">
+                        <i class="fas fa-trash-alt"></i> Delete
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <a href="/game/add/" class="btn btn-primary btn-sm">Add Game</a>
+{% endblock %}

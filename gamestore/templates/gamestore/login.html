@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}Gamestore - Login{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-4 mx-auto">
+    <h1>Login</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-primary btn-block">Login</button>
+    </form>
+
+    <br>
+
+    {% load socialaccount %}
+
+    {% get_providers as socialaccount_providers %}
+
+    {% for provider in socialaccount_providers %}
+        {% if provider.id == "openid" %}
+            {% for brand in provider.get_brands %}
+                <a title="{{ brand.name }}" class="btn btn-secondary btn-block"
+                   href="{% provider_login_url provider.id openid=brand.openid_url process=process %}">Login with {{ brand.name }}</a>
+                <br>
+            {% endfor %}
+        {% endif %}
+
+        <a title="{{ provider.name }}" class="btn btn-secondary btn-block"
+           href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">Login with {{ provider.name }}</a>
+        <br>
+    {% endfor %}
+        </div>
+    </div>
+{% endblock %}

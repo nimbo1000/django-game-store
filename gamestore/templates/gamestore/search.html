@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block title %}Gamestore - Search{% endblock %}
+
+{% block head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+          integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                <h1>Search Results</h1>
+            </div>
+            <div class="col-sm-4">
+                <form method="GET" action="/search">
+                    <div class="input-group">
+                        <input type="text" class="form-control shadow-none" placeholder="Search" name="s" value="{{ request.GET.s }}">
+                        <div class="input-group-append">
+                            <button class="btn btn-secondary" type="submit">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="album py-5">
+        <div class="container">
+            <div class="row">
+                {% for game in games %}
+                    <div class="col-md-4">
+                        {% include "gamestore/game_card.html" %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

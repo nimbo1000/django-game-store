@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    {% load static %}
+    {% load filter %}
+    <link rel="stylesheet" href="{% static "gamestore/css/bootstrap.min.css" %}"
+          integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS">
+    <link rel="stylesheet" href="{% static "gamestore/css/style.css" %}">
+
+    {% block head %}
+    {% endblock %}
+
+    <title>{% block title %}Gamestore{% endblock %}</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-light fixed-top bg-light">
+    <a class="navbar-brand" href="/">Gamestore</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+
+            {% if request.user|has_group:"Developer" %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/">My Games</a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Store</a>
+                </li>
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/bought-games">My Games</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/high-scores">High Scores</a>
+                    </li>
+                {% endif %}
+            {% endif %}
+
+            {% block navitem %}
+            {% endblock %}
+        </ul>
+        <ul class="navbar-nav">
+            {% if not user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/accounts/signup/">Register</a>
+                </li>
+            {% endif %}
+            <li class="nav-item">
+                {% if user.is_authenticated %}
+                    <a class="nav-link" href="/accounts/logout">Logout</a>
+                {% else %}
+                    <a class="nav-link" href="/accounts/login">Login</a>
+                {% endif %}
+            </li>
+        </ul>
+    </div>
+</nav>
+<main class="container">
+    {% block content %}
+        You must use the template tag <code>block</code> with a block name
+        <code>content</code> in your own templates to put content to this area.
+    {% endblock %}
+</main>
+<!-- Optional JavaScript -->
+<script src="{% static "gamestore/js/jquery-3.3.1.min.js" %}"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="></script>
+<script src="{% static "gamestore/js/bootstrap.min.js" %}"
+        integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"></script>
+
+{% block javascript %}
+{% endblock %}
+
+</body>
+</html>

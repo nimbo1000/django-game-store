@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Gamestore - Play Game{% endblock %}
+
+{% block content %}
+    <h1>{{ game.name }}</h1>
+    <p>{{ game.description }}</p>
+    <iframe class="game_iframe" src="/game/{{ game.id }}/load/">
+    </iframe>
+    <p id="game_results">
+    </p>
+    <h2>High Scores</h2>
+    <table class="table" id="game_highscores">
+        <thead>
+        <tr>
+            <th scope="col">User</th>
+            <th scope="col">Score</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for highscoreRow in highscores_list %}
+            <tr>
+                <td>{{ highscoreRow.user.username }}</td>
+                <td>{{ highscoreRow.score }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
+
+{% block javascript %}
+
+    {% load static %}
+    <script src="{% static 'gamestore/js/jquery.cookie.js' %}"></script>
+    <script>
+        window.addEventListener("message", receiveMessage, false);
+
+        function receiveMessage(event) {
+            var iframe = document.getElementsByTagName("iframe")[0];
+            console.log(event.data);
+
+            if (event.data.messageType === "SETTING") {
+                iframe.style.width = event.data.options.width + "px";
+                iframe.style.height = event.data.options.height + "px";
+            }
+            //*****Loading*****//
+            var csrftoken = $.cookie("csrftoken");
+
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+            $.ajax({
+                method: "POST",
+                url: "/ajax/handle_message/",
+                data: {
+                    message: JSON.stringify(event.data),
+                    game_id: {{ game.id }}
+                },
+                dataType: "json",
+                success: function (data) {
+                    console.log(JSON.stringify(data));
+
+                    switch (data.messageType) {
+                        case "SCORE":
+                            $("#game_highscores").html(data.highscores);
+                            break;
+                        case "SAVE":
+                            break;
+                        case "LOAD_REQUEST":
+                            break;
+                        case "LOAD":
+                            data.gameState = JSON.parse(data.gameState.replace(/'/g, "\""));
+                            var msg = data.gameState;
+                            iframe.contentWindow.postMessage(data, "*");
+                            break;
+                        case "ERROR":
+
+                            break;
+                        case "SETTING":
+                            break;
+                        default:
+                    }
+                }
+            });
+        }
+    </script>
+{% endblock %}

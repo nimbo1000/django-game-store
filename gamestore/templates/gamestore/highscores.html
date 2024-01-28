@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Gamestore - Highscores{% endblock %}
+
+{% block content %}
+    <h1>High Scores</h1>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Game</th>
+            <th scope="col">User</th>
+            <th scope="col">Score</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for highscoreRow in highscores_list %}
+            <tr>
+                <td>{{ highscoreRow.game.name }}</td>
+                <td>{{ highscoreRow.user.username }}</td>
+                <td>{{ highscoreRow.score }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

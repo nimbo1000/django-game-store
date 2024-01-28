@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Test Game</title>
+    <meta charset="utf-8"/>
+    <style>
+        div {
+            text-align: center;
+        }
+
+        #alphabet {
+            margin: 15px auto;
+            text-align: center;
+        }
+
+        #alphabet li {
+            float: left;
+            margin: 0 10px 10px 0;
+            list-style: none;
+            width: 35px;
+            height: 30px;
+            padding-top: 10px;
+            cursor: pointer;
+            background: #fff;
+            color: #29175c;
+            border: solid 1px #29175c;
+        }
+
+        #alphabet li:hover {
+            background: #29175c;
+            border: solid 1px #fff;
+            color: #fff;
+        }
+
+        .active {
+            opacity: 0.4;
+            cursor: default;
+        }
+
+        #word_holder {
+            text-align: center;
+            font-size: 28px;
+            color: #29175c;
+        }
+
+        #again {
+            display: none;
+        }
+
+        #continue {
+            display: none;
+        }
+
+        button {
+            background: #fff;
+            color: #29175c;
+            border: solid 1px #29175c;
+            padding: 10px;
+
+        }
+
+        #game_controls {
+            margin-top: 10px;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"
+            integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT"
+            crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function () {
+            "use strict";
+
+            // These variable track the state of this "game"
+            var country_list = ["Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Anguilla", "Antigua & Barbuda", "Argentina", "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia", "Bosnia & Herzegovina", "Botswana", "Brazil", "British Virgin Islands", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Cape Verde", "Cayman Islands", "Chad", "Chile", "China", "Colombia", "Congo", "Cook Islands", "Costa Rica", "Cote D Ivoire", "Croatia", "Cruise Ship", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Estonia", "Ethiopia", "Falkland Islands", "Faroe Islands", "Fiji", "Finland", "France", "French Polynesia", "French West Indies", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Gibraltar", "Greece", "Greenland", "Grenada", "Guam", "Guatemala", "Guernsey", "Guinea", "Guinea Bissau", "Guyana", "Haiti", "Honduras", "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Isle of Man", "Israel", "Italy", "Jamaica", "Japan", "Jersey", "Jordan", "Kazakhstan", "Kenya", "Kuwait", "Kyrgyz Republic", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macau", "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Mauritania", "Mauritius", "Mexico", "Moldova", "Monaco", "Mongolia", "Montenegro", "Montserrat", "Morocco", "Mozambique", "Namibia", "Nepal", "Netherlands", "Netherlands Antilles", "New Caledonia", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Norway", "Oman", "Pakistan", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Puerto Rico", "Qatar", "Reunion", "Romania", "Russia", "Rwanda", "Saint Pierre & Miquelon", "Samoa", "San Marino", "Satellite", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "South Africa", "South Korea", "Spain", "Sri Lanka", "St Kitts & Nevis", "St Lucia", "St Vincent", "St. Lucia", "Sudan", "Suriname", "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor L'Este", "Togo", "Tonga", "Trinidad & Tobago", "Tunisia", "Turkey", "Turkmenistan", "Turks & Caicos", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "Uruguay", "Uzbekistan", "Venezuela", "Vietnam", "Virgin Islands (US)", "Yemen", "Zambia", "Zimbabwe"];
+            var alphabet = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
+
+            var points = 0;
+            var allowedGuesses = 7;
+            var wrongGuesses = 0;
+
+            var word = "";
+            var displayWord = "";
+
+            var guessedLetters = [];
+            var foundCountries = [];
+
+            var displayCorrectLetters = function () {
+                displayWord = "";
+                var correctWord = "";
+
+                for (var i = 0; i < word.length; i++) {
+                    correctWord += " " + word[i] + " ";
+
+                    if ((guessedLetters.indexOf(word[i])) === -1) {
+                        if (alphabet.indexOf(word[i].toLowerCase()) === -1) {
+                            displayWord += "  " + word[i];
+                        } else {
+                            displayWord += " _ ";
+                        }
+                    } else {
+                        displayWord += " " + word[i] + " ";
+                    }
+                }
+                $("#word_holder").text(displayWord);
+                wrongGuesses = 0;
+                for (var i = 0; i < guessedLetters.length; i++) {
+                    if (word.indexOf(guessedLetters[i]) === -1) {
+                        wrongGuesses++;
+                    }
+                }
+
+                // increase points if the user guessed a word correctly and submit the new score
+                if (wrongGuesses <= allowedGuesses && displayWord === correctWord) {
+                    document.getElementById("continue")
+                        .style.display = "inline";
+                    add_points();
+                    submit_score();
+                    foundCountries.push(word);
+                }
+                // submit score if user reached guess limit
+                if (wrongGuesses === allowedGuesses) {
+                    submit_score();
+                    document.getElementById("again")
+                        .style.display = "inline";
+                }
+            };
+
+            var showNextWord = function () {
+                var country = "";
+                do {
+                    country = country_list[
+                        Math.floor(Math.random() * country_list.length)
+                        ];
+                } while (foundCountries.indexOf[country] === -1);
+
+                word = country.toUpperCase();
+                resetWord(word);
+            };
+
+            var resetWord = function (newWord) {
+                wrongGuesses = 0;
+                guessedLetters = [];
+                word = newWord;
+                displayCorrectLetters();
+                document.getElementById("again").style.display = "none";
+                document.getElementById("continue").style.display = "none";
+                // restore initial button opaqueness
+                $("#alphabet li").removeClass("active");
+            };
+
+            $("#again").click(function () {
+                points = 0;
+                foundCountries = [];
+                showNextWord();
+            });
+
+            $("#continue").click(function () {
+                showNextWord();
+            });
+
+            var add_points = function () {
+                points += 1;
+                $("#score").text(points);
+            };
+
+            var initialize = function () {
+                var msg = {
+                    "messageType": "LOAD_REQUEST"
+                };
+                window.parent.postMessage(msg, "*");
+                showNextWord();
+            };
+
+            initialize();
+
+            var displayLetters = function () {
+                var lettersList = document.getElementById("alphabet");
+                var listItem;
+
+                for (var i = 0; i < alphabet.length; i++) {
+                    listItem = document.createElement("li");
+                    listItem.id = "letter";
+                    listItem.innerHTML = alphabet[i].toUpperCase();
+                    lettersList.appendChild(listItem);
+                }
+            };
+
+            displayLetters();
+
+            $("#alphabet li").click(function () {
+                var guessedLetter = (this.innerHTML);
+                // add the selected letter to the list of guessed letters
+                if (guessedLetters.indexOf(guessedLetter) === -1) {
+                    guessedLetters.push(guessedLetter);
+                    // make letter opaque to indicate it has been clicked
+                    this.setAttribute("class", "active");
+                    // evaluate the input
+                    displayCorrectLetters();
+                    save();
+                }
+
+            });
+
+            var save = function () {
+                var msg = {
+                    "messageType": "SAVE",
+                    "gameState": {
+                        "word": word.toUpperCase(),
+                        "guessedLetters": guessedLetters,
+                        "score": parseFloat($("#score").text())
+                    }
+                };
+                window.parent.postMessage(msg, "*");
+            };
+
+            var submit_score = function () {
+                var msg = {
+                    "messageType": "SCORE",
+                    "score": parseFloat($("#score").text())
+                };
+                window.parent.postMessage(msg, "*");
+
+            };
+
+            window.addEventListener("message", function (evt) {
+                // alert(JSON.stringify(evt.data));
+                if (evt.data.messageType === "LOAD") {
+                    word = evt.data.gameState.word;
+                    guessedLetters = evt.data.gameState.guessedLetters;
+                    points = evt.data.gameState.score;
+                    $("#score").text(points);
+                    displayCorrectLetters();
+                } else if (evt.data.messageType === "ERROR") {
+                    alert(evt.data.info);
+                }
+            });
+
+            var message = {
+                messageType: "SETTING",
+                options: {
+                    "width": 700,
+                    "height": 300
+                }
+            };
+            window.parent.postMessage(message, "*");
+        });
+    </script>
+</head>
+
+<body>
+<div id="buttons">
+    <ul id="alphabet">
+    </ul>
+</div>
+<div style="clear: both"></div>
+<pre id="word_holder"></pre>
+
+<div><span id="score">0</span> Points</div>
+
+<div id="game_controls">
+    <button id="continue">Continue</button>
+    <button id="again">Play again</button>
+</div>
+</body>
+</html>
+

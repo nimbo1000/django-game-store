@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load filter %}
+
+{% block title %}Gamestore - {{ game.name }}{% endblock %}
+
+{% block head %}
+    {{ block.super }}
+    <meta property="og:title" content="{{ game.name }}"/>
+    <meta property="og:locale" content="en_GB"/>
+    <meta property="og:site_name" content="Gamestore"/>
+    <meta property="og:description" content="{{ game.description }}"/>
+{% endblock %}
+
+{% block content %}
+    <h1>{{ game.name }}</h1>
+    <p>{{ game.price|currency }}</p>
+    <p>{{ game.description }}</p>
+    {% if form %}
+    <form method="post" action="http://payments.webcourse.niksula.hut.fi/pay/">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit" class="btn btn-primary">Buy</button>
+    </form>
+    {% elif request.user|has_group:"Gamer" %}
+        <a href="/game/{{ game.id }}/play" class="btn btn-primary">Play</a>
+    {% endif %}
+{% endblock %}

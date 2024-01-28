@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block title %}Gamestore - My Games{% endblock %}
+
+{% block content %}
+    <h1>My Games</h1>
+    <div class="album py-5">
+        <div class="container">
+            <div class="row">
+                {% for game in bought_games %}
+                    <div class="col-md-4">
+                        {% include "gamestore/game_card.html" %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

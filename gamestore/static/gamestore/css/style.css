@@ -1,0 +1,18 @@
+body {
+    padding-top: 4.5rem;
+    padding-bottom: 4.5rem;
+}
+
+.game_iframe{
+  width: 400px;
+  height: 400px;
+}
+
+#game_highscores th, #game_highscores td{
+  padding: 5px;
+}
+
+.game_box:hover{
+    box-shadow: 0 0 11px rgba(33,33,33,.2);
+    cursor: pointer;
+}

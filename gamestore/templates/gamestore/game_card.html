@@ -1,0 +1,13 @@
+{% load filter %}
+<div class="card mb-4 game_box" onclick="location.href='/game/{{ game.id }}/';">
+        <div class="card-body">
+            <h3 class="card-title">{{ game.name }}</h3>
+            <p class="card-text">{{ game.description }}</p>
+            <small>{{ game.price|currency }}</small>
+            {% if game in bought_games %}
+                <a href="/game/{{ game.id }}/play" class="btn btn-primary float-right">Play</a>
+            {% elif request.user|has_group:"Gamer" %}
+                <a href="/game/{{ game.id }}/" class="btn btn-primary float-right">Buy</a>
+            {% endif %}
+        </div>
+</div>
