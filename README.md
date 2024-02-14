@@ -1,3 +1,8 @@
+
+# Django Game Store
+
+This repository contains the project implemented for the Web Software Development course during my time as a student at Aalto University.
+
 Project Plan
 -----------------------
 
